@@ -18,6 +18,12 @@ type Movie struct {
 }
 
 // validation is performed on a Movie struct, instead of the input struct in our handlers
+
+// Use the Check() method to execute our validation checks. This will add the
+// provided key and error message to the errors map if the check does not evaluate
+// to true. For example, in the first line here we "check that the title is not
+// equal to the empty string". In the second, we "check that the length of the title
+// is less than or equal to 500 bytes" and so on.
 func ValidateMovie(v *validator.Validator, movie *Movie) {
 	v.Check(movie.Title != "", "title", "must be provided")
 	v.Check(len(movie.Title) <= 500, "title", "must not be more than 500 bytes long")

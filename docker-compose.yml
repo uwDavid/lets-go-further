@@ -1,31 +1,29 @@
 
 services:
 # connect to db container: 
-#     docker exec -it mysqldb bash
+#     docker exec -it psdb bash
 #     bash: mysql --password="example"
-# mysql connection string in Go: 
-#     user:password@tcp(container-name:3306)/database
+# psql connection string in Go: 
+#     postgres://root:secret@localhost:5432/testdb?sslmode=disable
 
-  mysqldb: 
-    image: mysql
-    container_name: mysqldb
-    command: --default-authentication-plugin=mysql_native_password
-    restart: always 
-    volumes:
-      - mysqldb:/var/lib/mysql
-    ports:
-      - 3306:3306
-    environment:
-      MYSQL_ROOT_PASSWORD: example
-      MYSQL_PASSWORD: example
-      MYSQL_ROOT_HOST: "%"
-
-  adminer:
-    image: adminer
-    container_name: adminer-container
+  psdb:
+    container_name: psdb
+    image: postgres:15-alpine
     restart: always
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=secret
     ports: 
-      - 8080:8080
+      - "5432:5432"
+    volumes:
+      - psql_data:/var/lib/postgresql/data
+
+#  adminer:
+#    image: adminer
+#    container_name: adminer-container
+#    restart: always
+#    ports: 
+#      - 8080:8080
 
 volumes:
-  mysqldb:
+  psql_data:
