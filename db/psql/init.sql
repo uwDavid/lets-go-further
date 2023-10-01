@@ -1,0 +1,12 @@
+CREATE DATABASE greenlight;
+
+\c greenlight
+
+CREATE ROLE greenlight WITH LOGIN PASSWORD 'pa55word';
+
+CREATE EXTENSION IF NOT EXISTS citext;
+
+GRANT ALL ON SCHEMA public To greenlight;
+GRANT ALL PRIVILEGES ON DATABASE your_database TO your_user;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO your_user;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO your_user;
