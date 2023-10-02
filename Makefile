@@ -26,3 +26,6 @@ test-delete:
 
 test-patch: 
 	curl -X PATCH -d '{"year":1985}' localhost:4000/v1/movies/4
+
+test-list:
+	curl localhost:4000/v1/movies
