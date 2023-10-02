@@ -19,7 +19,10 @@ test-put:
 	curl -X PUT -d $(BODY) localhost:4000/v1/movies/2
 
 test-show:
-	curl localhost:4000/v1/movies/2
+	curl localhost:4000/v1/movies/4
 
 test-delete:
 	curl -X DELETE localhost:4000/v1/movies/7
+
+test-patch: 
+	curl -X PATCH -d '{"year":1985}' localhost:4000/v1/movies/4
