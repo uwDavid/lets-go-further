@@ -4,9 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"flag"
-	"fmt"
-	"log"
-	"net/http"
 	"os"
 	"time"
 	"uwDavid/moviedb/internal/data"
@@ -77,7 +74,7 @@ func main() {
 	}
 
 	defer db.Close()
-	// Likewise use the PrintInfo() method to write a message at the INFO level.
+
 	logger.PrintInfo("database connection pool established", nil)
 
 	// initialize app struct
@@ -87,7 +84,7 @@ func main() {
 		models: data.NewModels(db),
 	}
 
-	// server config
+	/* move server config to server.go
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.port),
 		Handler:      app.routes(),
@@ -96,7 +93,6 @@ func main() {
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
 	}
-
 	// Again, we use the PrintInfo() method to write a "starting server" message at the
 	// INFO level. But this time we pass a map containing additional properties (the
 	// operating environment and server address) as the final parameter.
@@ -104,8 +100,11 @@ func main() {
 		"addr": srv.Addr,
 		"env":  cfg.env,
 	})
-	err = srv.ListenAndServe()
-	logger.PrintFatal(err, nil)
+	*/
+	err = app.serve()
+	if err != nil {
+		logger.PrintFatal(err, nil)
+	}
 }
 
 // openDB() helper
