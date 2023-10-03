@@ -1,6 +1,9 @@
 server: 
 	go run ./cmd/api
 
+c-m: 
+	migrate create -seq -ext sql -dir db/migrations -seq $(name)
+
 db: 
 	docker compose up -d
 
@@ -15,6 +18,12 @@ BODY='{"title":"Black Panther","year":2018,"runtime":"134 mins","genres":["sci-f
 test-post:
 	curl -i -d $(BODY) localhost:4000/v1/movies
 
+USER='{"name": "Alice Smith", "email": "alice@example.com", "password": "pa55word"}'
+USER2='{"name": "", "email": "bob@invalid.", "password": "pass"}'
+USER3='{"name": "Alice Jones", "email": "alice@example.com", "password": "pa55word"}'
+test-user-register:
+	curl -i -d $(USER3) localhost:4000/v1/users
+	
 test-put: 
 	curl -X PUT -d $(BODY) localhost:4000/v1/movies/2
 

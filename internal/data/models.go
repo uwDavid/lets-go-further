@@ -12,23 +12,13 @@ var (
 
 // Models struct to wrap MovieModel + others
 type Models struct {
-	Movies interface {
-		Insert(movie *Movie) error
-		Get(id int64) (*Movie, error)
-		Update(movie *Movie) error
-		Delete(id int64) error
-		GetAll(string, []string, Filters) ([]*Movie, Metadata, error)
-	}
+	Movies MovieModel
+	Users  UserModel // Add a new Users field.
 }
 
 func NewModels(db *sql.DB) Models {
 	return Models{
 		Movies: MovieModel{DB: db},
-	}
-}
-
-func NewMockModels() Models {
-	return Models{
-		Movies: MockMovieModel{},
+		Users:  UserModel{DB: db}, // Initialize a new UserModel instance.
 	}
 }
