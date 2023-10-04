@@ -20,7 +20,7 @@ test-post:
 
 USER='{"name": "Alice Smith", "email": "alice@example.com", "password": "pa55word"}'
 USER2='{"name": "", "email": "bob@invalid.", "password": "pass"}'
-USER3='{"name": "Alice Jones", "email": "alice@example.com", "password": "pa55word"}'
+USER3='{"name": "Bob Jones", "email": "bob@example.com", "password": "pa55word"}'
 test-user-register:
 	curl -i -d $(USER3) localhost:4000/v1/users
 	
