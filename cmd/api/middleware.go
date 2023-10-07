@@ -189,3 +189,71 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+// check that user is Authenticated
+func (app *application) requireAuthenticatedUser(next http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user := app.contextGetUser(r)
+
+		if user.IsAnonymous() {
+			app.authenticationRequiredResponse(w, r)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+// instead of returning a http.Handler, it returns a http.HandlerFunc instead
+// it makes it possible to wrap other handler functions directly w/ this middleware
+// w/o further conversions
+// Check that user is both authenticated AND activated
+func (app *application) requireActivatedUser(next http.HandlerFunc) http.HandlerFunc {
+	fn := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// retrieve user info
+		user := app.contextGetUser(r)
+
+		// if user is anonymous, inform client that they should authenticate
+		// we moved this to requireAuthenticatedUser()
+		/*
+			if user.IsAnonymous() {
+				app.authenticationRequiredResponse(w, r)
+				return
+			}
+		*/
+
+		// if user is not activated, inform client to activate their account
+		if !user.Activated {
+			app.inactiveAccountResponse(w, r)
+			return
+		}
+
+		// call next handler
+		next.ServeHTTP(w, r)
+	})
+	// we wrap this in requireAuthenticatedUser()
+	return app.requireAuthenticatedUser(fn)
+}
+
+func (app *application) requirePermission(code string, next http.HandlerFunc) http.HandlerFunc {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		user := app.contextGetUser(r)
+		permissions, err := app.models.Permissions.GetALlForUser(user.ID)
+		if err != nil {
+			app.serverErrorResponse(w, r, err)
+			return
+		}
+
+		// check if permission exists
+		if !permissions.Include(code) {
+			app.notPermittedResponse(w, r)
+			return
+		}
+
+		// user has the required permission, call next handler
+		next.ServeHTTP(w, r)
+	}
+	// we wrap this in Activated User middleware, to automatically call authenticate
+	return app.requireActivatedUser(fn)
+	// Note: we then update the routes.go to use this middleware
+}
