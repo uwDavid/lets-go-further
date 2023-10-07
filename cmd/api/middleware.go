@@ -257,3 +257,32 @@ func (app *application) requirePermission(code string, next http.HandlerFunc) ht
 	return app.requireActivatedUser(fn)
 	// Note: we then update the routes.go to use this middleware
 }
+
+func (app *application) enableCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// add "Vary: Origin" header, research why this is important
+		w.Header().Add("Vary", "Origin")
+		w.Header().Add("Vary", "Access-Control-Request-Method")
+		// get value of request's origin
+		origin := r.Header.Get("Origin")
+		if origin != "" && len(app.config.cors.trustedOrigins) != 0 {
+			for i := range app.config.cors.trustedOrigins {
+				if origin == app.config.cors.trustedOrigins[i] {
+					w.Header().Set("Access-Control-Allow-Origin", origin)
+
+					// check if req HTTP method OPTIONS + contains request-method header
+					// if so, we treat it as a preflight request
+					if r.Method == http.MethodOptions && r.Header.Get("Access-Control-Request-Method") != "" {
+						w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, PUT, PATCH, DELETE")
+						w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
+
+						// write 200 OK status, and return from middleware w/ no further actions
+						w.WriteHeader(http.StatusOK)
+						return
+					}
+				}
+			}
+		}
+		next.ServeHTTP(w, r)
+	})
+}
