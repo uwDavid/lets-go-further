@@ -10,18 +10,14 @@ cd tls
 go run /usr/local/go/src/crypto/tls/generate_cert.go --rsa-bits=2048 --host=localhost
 ```
 
-#### Running MySQL container
+#### Running Test SMTP Server
+Instead of using `Mailtrap`, we will just run a `MailHog` container. 
+```
+docker run -d -p 1025:1025 -p 8025:8025 mailhog/mailhog
+```
+We change the config to point the host to `localhost` and port to `1025`
+
+#### Running PSQL container
 ```
 docker compose up -d
-```
-However, you may get this error when trying to connect using `user@localhost`. 
-There are 2 ways to solve this: 
-1. Add `MYSQL_ROOT_HOST: '%'` environment variable to allow login from any IP. 
-Caveat is that you have to clear the docker volume
-
-2. Use `docker exec` and change the grant table: 
-```
-SELECT host, user from user;
-CREATE USER 'test_web'@'%' IDENTIFIED BY 'pass';
-GRANT CREATE, DROP, ALTER, INDEX, SELECT, INSERT, UPDATE, DELETE ON test_snippetbox.* TO 'test_web'@'%';
 ```

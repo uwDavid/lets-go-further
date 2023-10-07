@@ -17,6 +17,8 @@ var (
 	ErrEditConflict   = errors.New("no entry")
 )
 
+var AnonymousUser = &User{}
+
 // we use json:"-" struct tag to prevent the Password and Version fields
 // from appearing in any output when we encode it to JSON.
 type User struct {
@@ -27,6 +29,10 @@ type User struct {
 	Password  password  `json:"-"`
 	Activated bool      `json:"activated"`
 	Version   int       `json:"-"`
+}
+
+func (u *User) IsAnonymous() bool {
+	return u == AnonymousUser
 }
 
 // The plaintext field is a *pointer* to a string, so that we're able to distinguish

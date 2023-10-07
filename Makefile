@@ -18,12 +18,16 @@ BODY='{"title":"Black Panther","year":2018,"runtime":"134 mins","genres":["sci-f
 test-post:
 	curl -i -d $(BODY) localhost:4000/v1/movies
 
-USER='{"name": "Alice Smith", "email": "alice@example.com", "password": "pa55word"}'
+USER='{"name": "Test User", "email": "test@example.com", "password": "pa55word"}'
 USER2='{"name": "", "email": "bob@invalid.", "password": "pass"}'
-USER3='{"name": "Bob Jones", "email": "bob@example.com", "password": "pa55word"}'
+USER3='{"name": "Charlie Charles", "email": "charles@example.com", "password": "pa55word"}'
 test-user-register:
 	curl -i -d $(USER3) localhost:4000/v1/users
 	
+TOKEN='{"token": "Z7BUOADCNEWLSVMD4JIJTXO7YI"}'
+test-activation: 
+	curl -X PUT -d $(TOKEN) localhost:4000/v1/users/activated
+
 test-put: 
 	curl -X PUT -d $(BODY) localhost:4000/v1/movies/2
 
@@ -39,3 +43,5 @@ test-patch:
 test-list:
 	curl localhost:4000/v1/movies
 
+mailserver:
+	docker run -d -p 1025:1025 -p 8025:8025 mailhog/mailhog
